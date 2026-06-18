@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JR Transporte Expresso — Coleta e entrega urgente, direto ao destino</title>
+<meta name="description" content="Encomendas urgentes interestaduais, motorista particular para viagens longas e coletas dedicadas com veículo próprio. Coleta hoje, entrega direto no destino — sem passar por transportadora.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600&family=Spline+Sans+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== CONFIGURAÇÃO RÁPIDA — edite só isto =====================
+     1) WHATSAPP: troque pelo seu número com DDI+DDD, só dígitos.
+     2) PRECIFICAÇÃO: ajuste os valores em PRECO mais abaixo (no script).
+  ================================================================= */
+  :root{
+    --asfalto:#14181D;
+    --superficie:#1B2127;
+    --superficie-2:#222A31;
+    --linha:#2C343C;
+    --texto:#EDEFF1;
+    --muted:#8A95A1;
+    --ambar:#F4A91F;     /* faixa de rodovia — único destaque */
+    --ambar-soft:#F4A91F22;
+    --wa:#25D366;        /* verde só nos botões de WhatsApp */
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--asfalto);
+    color:var(--texto);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  a{color:inherit;text-decoration:none}
+
+  /* tipografia utilitária */
+  .eyebrow{
+    font-family:'Spline Sans Mono',monospace;
+    font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ambar);
+  }
+  h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.02;letter-spacing:-.01em}
+  .mono{font-family:'Spline Sans Mono',monospace}
+
+  /* ===== Botões ===== */
+  .btn-wa{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--wa);color:#06351A;font-weight:700;
+    font-family:'Archivo',sans-serif;font-size:1.02rem;
+    padding:15px 26px;border-radius:999px;border:0;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 26px -10px #25D36699;
+  }
+  .btn-wa:hover{transform:translateY(-2px);box-shadow:0 14px 34px -12px #25D366bb}
+  .btn-wa svg{width:20px;height:20px;flex:none}
+  .btn-ghost{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--texto);font-weight:600;padding:14px 22px;
+    border:1px solid var(--linha);border-radius:999px;
+    transition:border-color .15s, color .15s;
+  }
+  .btn-ghost:hover{border-color:var(--ambar);color:var(--ambar)}
+
+  /* ===== Topo ===== */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:#14181Dcc;backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--linha);
+  }
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-family:'Archivo';font-weight:900;font-size:1.1rem;letter-spacing:-.02em}
+  .logo b{color:var(--ambar)}
+  .nav-cta{font-size:.85rem;padding:9px 16px}
+  @media(max-width:560px){.nav-cta{display:none}}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;padding:74px 0 56px;overflow:hidden}
+  .hero .eyebrow{margin-bottom:18px}
+  .hero h1{
+    font-size:clamp(2.3rem,6.4vw,4.2rem);font-weight:900;
+    max-width:14ch;margin-bottom:20px;
+  }
+  .hero h1 .accent{color:var(--ambar)}
+  .hero p.lead{font-size:1.12rem;color:var(--muted);max-width:48ch;margin-bottom:30px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{font-size:.84rem;color:var(--muted);margin-top:16px}
+  .hero-note b{color:var(--texto)}
+
+  /* faixa de rodovia animada ao fundo */
+  .road{
+    position:absolute;left:0;right:0;bottom:0;height:8px;
+    background:repeating-linear-gradient(90deg,var(--ambar) 0 38px,transparent 38px 78px);
+    opacity:.5;
+    animation:dash 3.4s linear infinite;
+  }
+  @keyframes dash{to{background-position:78px 0}}
+  @media(prefers-reduced-motion:reduce){.road{animation:none}}
+
+  /* ===== Seções ===== */
+  section{padding:60px 0;border-top:1px solid var(--linha)}
+  .sec-head{margin-bottom:34px}
+  .sec-head h2{font-size:clamp(1.7rem,4vw,2.5rem);font-weight:800;margin-top:8px}
+  .sec-head p{color:var(--muted);max-width:52ch;margin-top:10px}
+
+  /* serviços */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:760px){.grid3{grid-template-columns:1fr}}
+  .card{
+    background:var(--superficie);border:1px solid var(--linha);
+    border-radius:var(--radius);padding:26px;
+    transition:border-color .2s, transform .2s;
+  }
+  .card:hover{border-color:var(--ambar);transform:translateY(-3px)}
+  .card .num{font-family:'Spline Sans Mono';color:var(--ambar);font-size:.8rem;letter-spacing:.1em}
+  .card h3{font-size:1.22rem;font-weight:700;margin:12px 0 8px}
+  .card p{color:var(--muted);font-size:.96rem}
+
+  /* rotas */
+  .rotas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.rotas{grid-template-columns:1fr}}
+  .rota{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--superficie);border:1px solid var(--linha);
+    border-radius:12px;padding:16px 20px;
+  }
+  .rota .od{display:flex;align-items:center;gap:12px;font-weight:600}
+  .rota .od .dot{width:9px;height:9px;border-radius:50%;background:var(--ambar);flex:none}
+  .rota .od .line{width:26px;height:2px;background:repeating-linear-gradient(90deg,var(--ambar) 0 5px,transparent 5px 9px)}
+  .rota .km{font-family:'Spline Sans Mono';color:var(--muted);font-size:.9rem}
+
+  /* ===== Estimador (assinatura: painel/odômetro) ===== */
+  .estimador{
+    background:linear-gradient(180deg,var(--superficie-2),var(--superficie));
+    border:1px solid var(--linha);border-radius:18px;
+    overflow:hidden;
+  }
+  .est-grid{display:grid;grid-template-columns:1fr 1fr}
+  @media(max-width:780px){.est-grid{grid-template-columns:1fr}}
+  .est-controls{padding:30px}
+  .est-controls label{display:block;font-size:.8rem;color:var(--muted);margin:18px 0 8px;letter-spacing:.02em}
+  .est-controls label:first-child{margin-top:0}
+  select,input[type=number]{
+    width:100%;background:var(--asfalto);color:var(--texto);
+    border:1px solid var(--linha);border-radius:10px;
+    padding:13px 14px;font-size:1rem;font-family:'Inter';
+  }
+  select:focus,input:focus{outline:2px solid var(--ambar);outline-offset:1px}
+  .toggle{display:flex;align-items:center;gap:10px;margin-top:18px;cursor:pointer;font-size:.92rem}
+  .toggle input{width:18px;height:18px;accent-color:var(--ambar)}
+
+  /* painel readout */
+  .est-readout{
+    background:
+      radial-gradient(120% 90% at 80% 0%, #F4A91F18, transparent 60%),
+      var(--asfalto);
+    padding:30px;display:flex;flex-direction:column;justify-content:center;
+    border-left:1px solid var(--linha);
+  }
+  @media(max-width:780px){.est-readout{border-left:0;border-top:1px solid var(--linha)}}
+  .ro-label{font-family:'Spline Sans Mono';font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .ro-price{font-family:'Spline Sans Mono';font-weight:700;font-size:clamp(2.6rem,8vw,3.6rem);color:var(--ambar);line-height:1;margin:6px 0 4px;letter-spacing:-.02em}
+  .ro-sub{font-size:.86rem;color:var(--muted)}
+  .ro-break{margin:20px 0;border-top:1px dashed var(--linha);padding-top:16px;display:grid;gap:8px}
+  .ro-row{display:flex;justify-content:space-between;font-size:.9rem}
+  .ro-row span:first-child{color:var(--muted)}
+  .ro-row span:last-child{font-family:'Spline Sans Mono'}
+  .est-readout .btn-wa{margin-top:22px;width:100%;justify-content:center}
+  .ro-disc{font-size:.78rem;color:var(--muted);margin-top:14px;line-height:1.5}
+
+  /* confiança */
+  .trust{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:620px){.trust{grid-template-columns:1fr}}
+  .trust-item{display:flex;gap:14px;align-items:flex-start;background:var(--superficie);border:1px solid var(--linha);border-radius:12px;padding:18px 20px}
+  .trust-item .ic{width:26px;height:26px;color:var(--ambar);flex:none}
+  .trust-item h4{font-family:'Archivo';font-weight:700;font-size:1rem;margin-bottom:3px}
+  .trust-item p{font-size:.88rem;color:var(--muted)}
+
+  /* CTA final */
+  .final{text-align:center;background:var(--superficie);border:1px solid var(--linha);border-radius:18px;padding:48px 26px}
+  .final h2{font-size:clamp(1.7rem,4.6vw,2.6rem);font-weight:900;max-width:18ch;margin:8px auto 14px}
+  .final p{color:var(--muted);max-width:46ch;margin:0 auto 28px}
+
+  footer{padding:40px 0;border-top:1px solid var(--linha);color:var(--muted);font-size:.85rem;text-align:center}
+  footer .mono{color:var(--texto)}
+
+  /* botão flutuante mobile */
+  .float-wa{
+    position:fixed;right:18px;bottom:18px;z-index:60;
+    width:58px;height:58px;border-radius:50%;background:var(--wa);
+    display:none;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px -8px #25D366cc;
+  }
+  .float-wa svg{width:28px;height:28px}
+  @media(max-width:560px){.float-wa{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <div class="logo">JR <b>Transporte Expresso</b></div>
+    <a class="btn-wa nav-cta" data-wa="Olá! Vim pelo site e quero fazer um orçamento.">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.91z"/></svg>
+      Fazer orçamento
+    </a>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" style="border-top:0">
+  <div class="wrap">
+    <div class="eyebrow">JR Transporte Expresso · Rio de Janeiro</div>
+    <h1>Coleta hoje, entrega <span class="accent">direto no destino.</span></h1>
+    <p class="lead">Encomendas urgentes entre estados e viagens particulares com motorista próprio. Uma pessoa real pega e leva, porta a porta — sem passar por transportadora.</p>
+    <div class="hero-cta">
+      <a class="btn-wa" data-wa="Olá! Vim pelo site e quero fazer um orçamento de coleta/entrega.">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.91z"/></svg>
+        Chamar no WhatsApp
+      </a>
+      <a class="btn-ghost" href="#estimador">Estimar minha rota →</a>
+    </div>
+    <p class="hero-note"><b>Atende agora:</b> Rio ↔ São Paulo · Rio ↔ Minas · Rio ↔ Espírito Santo · São Paulo ↔ Minas</p>
+  </div>
+  <div class="road" aria-hidden="true"></div>
+</section>
+
+<!-- ===================== SERVIÇOS ===================== -->
+<section id="servicos">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">O que fazemos</div>
+      <h2>Três serviços, um motorista de confiança</h2>
+      <p>Sem balcão, sem fila, sem repasse pra outra transportadora. O que sai daqui chega no destino combinado.</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Encomendas urgentes interestaduais</h3>
+        <p>Documentos, peças e volumes que precisam chegar rápido. Coleta no mesmo dia e entrega direta, sem passar por centro de distribuição.</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>Motorista particular para viagens longas</h3>
+        <p>Viagem interestadual com conforto e segurança. Você só embarca — direção, rota e horário ficam por nossa conta.</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>Coletas e entregas dedicadas</h3>
+        <p>Veículo exclusivo para a sua carga. Nada de dividir espaço ou esperar consolidação: é só a sua entrega, do ponto A ao ponto B.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ROTAS ===================== -->
+<section id="rotas">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Rotas atendidas</div>
+      <h2>Começando pelas rotas fortes</h2>
+      <p>Trajetos que rodamos com frequência. Outras rotas sob consulta — é só chamar no WhatsApp.</p>
+    </div>
+    <div class="rotas">
+      <div class="rota"><div class="od"><span class="dot"></span><span class="line"></span><span class="dot"></span> Rio de Janeiro ↔ São Paulo</div><span class="km">~429 km</span></div>
+      <div class="rota"><div class="od"><span class="dot"></span><span class="line"></span><span class="dot"></span> Rio de Janeiro ↔ Belo Horizonte</div><span class="km">~440 km</span></div>
+      <div class="rota"><div class="od"><span class="dot"></span><span class="line"></span><span class="dot"></span> Rio de Janeiro ↔ Vitória (ES)</div><span class="km">~521 km</span></div>
+      <div class="rota"><div class="od"><span class="dot"></span><span class="line"></span><span class="dot"></span> São Paulo ↔ Belo Horizonte</div><span class="km">~586 km</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ESTIMADOR ===================== -->
+<section id="estimador">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Estimativa na hora</div>
+      <h2>Calcule uma estimativa da sua rota</h2>
+      <p>Escolha uma rota ou informe a distância. O valor abaixo é uma estimativa — o preço final é fechado no WhatsApp, já com pedágio e detalhes da carga.</p>
+    </div>
+
+    <div class="estimador">
+      <div class="est-grid">
+        <div class="est-controls">
+          <label for="rota">Rota</label>
+          <select id="rota">
+            <option value="429">Rio de Janeiro ↔ São Paulo (~429 km)</option>
+            <option value="440">Rio de Janeiro ↔ Belo Horizonte (~440 km)</option>
+            <option value="521">Rio de Janeiro ↔ Vitória/ES (~521 km)</option>
+            <option value="custom">Outra rota (informar km)</option>
+          </select>
+
+          <label for="km" id="km-label" style="display:none">Distância só de ida (km)</label>
+          <input type="number" id="km" min="1" step="1" placeholder="ex: 300" style="display:none">
+
+          <label for="servico">Tipo de serviço</label>
+          <select id="servico">
+            <option value="entrega">Coleta / entrega de encomenda</option>
+            <option value="passageiro">Viagem com passageiro</option>
+          </select>
+
+          <label class="toggle" for="retorno">
+            <input type="checkbox" id="retorno" checked>
+            Considerar retorno (ida e volta)
+          </label>
+          <label class="toggle" for="urgencia">
+            <input type="checkbox" id="urgencia">
+            Urgência / saída imediata (+20%)
+          </label>
+        </div>
+
+        <div class="est-readout">
+          <div class="ro-label">Estimativa</div>
+          <div class="ro-price mono" id="preco">R$ —</div>
+          <div class="ro-sub" id="sub">selecione uma rota</div>
+
+          <div class="ro-break">
+            <div class="ro-row"><span>Distância considerada</span><span id="b-km">—</span></div>
+            <div class="ro-row"><span>Combustível estimado</span><span id="b-fuel">—</span></div>
+            <div class="ro-row"><span>Operação + serviço</span><span id="b-op">—</span></div>
+          </div>
+
+          <a class="btn-wa" id="wa-est">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.91z"/></svg>
+            Fechar essa rota no WhatsApp
+          </a>
+          <p class="ro-disc">Pedágio é cobrado à parte. Valores variam conforme carga, horário e disponibilidade. A estimativa serve só pra dar uma ideia inicial.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONFIANÇA ===================== -->
+<section id="confianca">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Por que confiar</div>
+      <h2>Transparência do início ao fim</h2>
+    </div>
+    <div class="trust">
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h4>CNPJ / MEI ativo</h4><p>Empresa formalizada, com nota e recibo da corrida quando precisar.</p></div>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div><h4>Rastreamento em tempo real</h4><p>Localização ao vivo compartilhada pelo WhatsApp durante todo o trajeto.</p></div>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <div><h4>Comprovante por foto</h4><p>Foto da entrega no destino, confirmando que a encomenda chegou em segurança.</p></div>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+        <div><h4>Ordem de serviço simples</h4><p>Origem, destino, valor combinado e tudo registrado antes de sair.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA FINAL ===================== -->
+<section>
+  <div class="wrap">
+    <div class="final">
+      <div class="eyebrow">Bora rodar</div>
+      <h2>Precisa enviar algo agora?</h2>
+      <p>Manda a origem, o destino e o que você precisa transportar. Respondo com o valor fechado em minutos.</p>
+      <a class="btn-wa" data-wa="Olá! Vim pelo site. Preciso de uma coleta/entrega — segue origem e destino:">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.91z"/></svg>
+        Chamar no WhatsApp agora
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo" style="font-size:1rem;margin-bottom:8px">JR <b>Transporte Expresso</b></div>
+    <p>Rio de Janeiro · Coleta e entrega dedicada · CNPJ <span class="mono">00.000.000/0001-00</span></p>
+  </div>
+</footer>
+
+<!-- WhatsApp flutuante (mobile) -->
+<a class="float-wa" data-wa="Olá! Vim pelo site e quero fazer um orçamento.">
+  <svg viewBox="0 0 24 24" fill="#06351A"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.91z"/></svg>
+</a>
+
+<script>
+/* ===================================================================
+   1) SEU WHATSAPP  — DDI(55) + DDD + número, só dígitos
+   ================================================================ */
+const WHATSAPP = "5521900000000";   // <-- TROQUE AQUI
+
+/* ===================================================================
+   2) REGRA DE PREÇO — ajuste à vontade depois de testar no mundo real
+   ================================================================ */
+const PRECO = {
+  precoCombustivel: 6.30,  // R$/litro (gasolina RJ, ref. ANP jun/2026)
+  kmPorLitro:       13,    // Corolla 2.0 em estrada, uso real c/ ar-cond.
+  desgastePorKm:    0.30,  // depreciação + manutenção + pneus por km
+  diaria:           350,   // sua mão de obra / tempo num trajeto longo
+  margemPct:        0.20,  // margem de lucro sobre o custo
+  precoMinimo:      250,   // piso por corrida
+  adicionalPax:     0.15,  // +15% se for viagem com passageiro
+  adicionalUrg:     0.20   // +20% urgência (controlado pelo checkbox)
+};
+
+const brl = v => "R$ " + v.toLocaleString("pt-BR",{minimumFractionDigits:0,maximumFractionDigits:0});
+
+const $ = id => document.getElementById(id);
+const rota=$("rota"), km=$("km"), kmLabel=$("km-label"),
+      servico=$("servico"), retorno=$("retorno"), urgencia=$("urgencia");
+
+let ultimo = { texto:"", oneway:0 };
+
+function calcular(){
+  const custom = rota.value === "custom";
+  kmLabel.style.display = custom ? "block" : "none";
+  km.style.display      = custom ? "block" : "none";
+
+  let oneway = custom ? Number(km.value||0) : Number(rota.value);
+  if(!oneway || oneway<=0){
+    $("preco").textContent="R$ —"; $("sub").textContent="informe a distância";
+    $("b-km").textContent="—"; $("b-fuel").textContent="—"; $("b-op").textContent="—";
+    ultimo={texto:"",oneway:0}; return montarLink();
+  }
+
+  const kmTotal = retorno.checked ? oneway*2 : oneway;
+  const fuel    = (kmTotal / PRECO.kmPorLitro) * PRECO.precoCombustivel;
+  const desgaste= kmTotal * PRECO.desgastePorKm;
+  const custoOp = fuel + desgaste;
+
+  let preco = (custoOp + PRECO.diaria) * (1 + PRECO.margemPct);
+  if(servico.value==="passageiro") preco *= (1 + PRECO.adicionalPax);
+  if(urgencia.checked)             preco *= (1 + PRECO.adicionalUrg);
+  preco = Math.max(preco, PRECO.precoMinimo);
+  preco = Math.ceil(preco/10)*10; // arredonda pra cima em dezenas
+
+  $("preco").textContent = brl(preco);
+  $("sub").textContent   = (retorno.checked?"ida e volta · ":"só ida · ") + "+ pedágio";
+  $("b-km").textContent  = kmTotal.toLocaleString("pt-BR") + " km";
+  $("b-fuel").textContent= brl(fuel);
+  $("b-op").textContent  = brl(custoOp + PRECO.diaria);
+
+  const rotaTxt = custom ? `${oneway} km de distância` : rota.options[rota.selectedIndex].text;
+  ultimo.texto = `Olá! Vim pelo site. Quero um orçamento:\n• Rota: ${rotaTxt}\n• Serviço: ${servico.options[servico.selectedIndex].text}\n• ${retorno.checked?"Ida e volta":"Só ida"}${urgencia.checked?" · Urgente":""}\n• Estimativa do site: ${brl(preco)} + pedágio\nPode confirmar?`;
+  ultimo.oneway = oneway;
+  montarLink();
+}
+
+function waLink(msg){ return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
+function montarLink(){
+  $("wa-est").href = waLink(ultimo.texto || "Olá! Quero um orçamento de coleta/entrega.");
+}
+
+[rota,km,servico,retorno,urgencia].forEach(el=>{
+  el.addEventListener("input",calcular);
+  el.addEventListener("change",calcular);
+});
+
+/* aplica o número do WhatsApp em todos os botões com data-wa */
+document.querySelectorAll("[data-wa]").forEach(a=>{
+  a.href = waLink(a.getAttribute("data-wa"));
+  a.target = "_blank"; a.rel="noopener";
+});
+
+calcular();
+</script>
+</body>
+</html>
