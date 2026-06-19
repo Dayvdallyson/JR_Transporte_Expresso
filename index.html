@@ -405,6 +405,8 @@ const PRECO = {
   diaria:           350,   // sua mão de obra / tempo num trajeto longo
   margemPct:        0.20,  // margem de lucro sobre o custo
   precoMinimo:      250,   // piso por corrida
+  pousadaAcimaKm:   900,   // acima disso soma pousada
+  pousadaValor:     250,   // pousada média em BRL
   adicionalRetorno: 0.30,  // +30% quando marcar ida e volta
   adicionalPax:     0.15,  // +15% se for viagem com passageiro
   adicionalUrg:     0.20   // +20% urgência (controlado pelo checkbox)
@@ -440,6 +442,7 @@ function calcular(){
   if(retorno.checked)             preco *= (1 + PRECO.adicionalRetorno);
   if(servico.value==="passageiro") preco *= (1 + PRECO.adicionalPax);
   if(urgencia.checked)             preco *= (1 + PRECO.adicionalUrg);
+  if(kmTotal > PRECO.pousadaAcimaKm) preco += PRECO.pousadaValor;
   preco = Math.max(preco, PRECO.precoMinimo);
   preco = Math.ceil(preco/10)*10; // arredonda pra cima em dezenas
 
