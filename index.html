@@ -305,8 +305,8 @@
           </select>
 
           <label class="toggle" for="retorno">
-            <input type="checkbox" id="retorno" checked>
-            Considerar retorno (ida e volta)
+            <input type="checkbox" id="retorno">
+            Considerar retorno (ida e volta +30%)
           </label>
           <label class="toggle" for="urgencia">
             <input type="checkbox" id="urgencia">
@@ -321,8 +321,6 @@
 
           <div class="ro-break">
             <div class="ro-row"><span>Distância considerada</span><span id="b-km">—</span></div>
-            <div class="ro-row"><span>Combustível estimado</span><span id="b-fuel">—</span></div>
-            <div class="ro-row"><span>Operação + serviço</span><span id="b-op">—</span></div>
           </div>
 
           <a class="btn-wa" id="wa-est">
@@ -407,6 +405,7 @@ const PRECO = {
   diaria:           350,   // sua mão de obra / tempo num trajeto longo
   margemPct:        0.20,  // margem de lucro sobre o custo
   precoMinimo:      250,   // piso por corrida
+  adicionalRetorno: 0.30,  // +30% quando marcar ida e volta
   adicionalPax:     0.15,  // +15% se for viagem com passageiro
   adicionalUrg:     0.20   // +20% urgência (controlado pelo checkbox)
 };
@@ -427,16 +426,18 @@ function calcular(){
   let oneway = custom ? Number(km.value||0) : Number(rota.value);
   if(!oneway || oneway<=0){
     $("preco").textContent="R$ —"; $("sub").textContent="informe a distância";
-    $("b-km").textContent="—"; $("b-fuel").textContent="—"; $("b-op").textContent="—";
+    $("b-km").textContent="—";
     ultimo={texto:"",oneway:0}; return montarLink();
   }
 
   const kmTotal = retorno.checked ? oneway*2 : oneway;
+  const diarias = PRECO.diaria * (retorno.checked ? 2 : 1);
   const fuel    = (kmTotal / PRECO.kmPorLitro) * PRECO.precoCombustivel;
   const desgaste= kmTotal * PRECO.desgastePorKm;
   const custoOp = fuel + desgaste;
 
-  let preco = (custoOp + PRECO.diaria) * (1 + PRECO.margemPct);
+  let preco = (custoOp + diarias) * (1 + PRECO.margemPct);
+  if(retorno.checked)             preco *= (1 + PRECO.adicionalRetorno);
   if(servico.value==="passageiro") preco *= (1 + PRECO.adicionalPax);
   if(urgencia.checked)             preco *= (1 + PRECO.adicionalUrg);
   preco = Math.max(preco, PRECO.precoMinimo);
@@ -445,8 +446,6 @@ function calcular(){
   $("preco").textContent = brl(preco);
   $("sub").textContent   = (retorno.checked?"ida e volta · ":"só ida · ") + "+ pedágio";
   $("b-km").textContent  = kmTotal.toLocaleString("pt-BR") + " km";
-  $("b-fuel").textContent= brl(fuel);
-  $("b-op").textContent  = brl(custoOp + PRECO.diaria);
 
   const rotaTxt = custom ? `${oneway} km de distância` : rota.options[rota.selectedIndex].text;
   ultimo.texto = `Olá! Vim pelo site. Quero um orçamento:\n• Rota: ${rotaTxt}\n• Serviço: ${servico.options[servico.selectedIndex].text}\n• ${retorno.checked?"Ida e volta":"Só ida"}${urgencia.checked?" · Urgente":""}\n• Estimativa do site: ${brl(preco)} + pedágio\nPode confirmar?`;
