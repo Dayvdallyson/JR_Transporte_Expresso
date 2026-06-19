@@ -145,12 +145,28 @@
   .est-controls{padding:30px}
   .est-controls label{display:block;font-size:.8rem;color:var(--muted);margin:18px 0 8px;letter-spacing:.02em}
   .est-controls label:first-child{margin-top:0}
-  select,input[type=number]{
+  .est-controls .od-fields:first-child .od-field:first-child label{margin-top:0}
+  select,.est-controls input[type=text],.est-controls input[type=number]{
     width:100%;background:var(--asfalto);color:var(--texto);
     border:1px solid var(--linha);border-radius:10px;
     padding:13px 14px;font-size:1rem;font-family:'Inter';
+    transition:border-color .15s ease,box-shadow .15s ease;
   }
   select:focus,input:focus{outline:2px solid var(--ambar);outline-offset:1px}
+  select:hover,.est-controls input[type=text]:hover:not(:disabled),.est-controls input[type=number]:hover{border-color:var(--ambar)}
+  .est-controls input::placeholder{color:var(--muted);opacity:.7}
+  .est-controls input:disabled{color:var(--muted);cursor:not-allowed;opacity:.9}
+
+  /* par Origem -> Destino com marcadores */
+  .od-fields{position:relative;margin-bottom:4px}
+  .od-fields::before{content:"";position:absolute;left:14px;top:54px;bottom:38px;width:2px;
+    background:repeating-linear-gradient(180deg,var(--linha) 0 5px,transparent 5px 10px)}
+  .od-field .field-wrap{position:relative}
+  .od-field .field-wrap input{padding-left:36px}
+  .od-field .field-dot{position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    width:11px;height:11px;border-radius:50%;pointer-events:none;z-index:1}
+  .od-field .field-dot.origem{background:var(--muted);box-shadow:0 0 0 3px var(--asfalto)}
+  .od-field .field-dot.destino{background:var(--ambar);box-shadow:0 0 0 3px #F4A91F33}
   .toggle{display:flex;align-items:center;gap:10px;margin-top:18px;cursor:pointer;font-size:.92rem}
   .toggle input{width:18px;height:18px;accent-color:var(--ambar)}
 
@@ -288,11 +304,22 @@
     <div class="estimador">
       <div class="est-grid">
         <div class="est-controls">
-          <label for="origem">Origem</label>
-          <input type="text" id="origem" value="Rio de Janeiro/RJ" disabled>
-
-          <label for="destino">Destino</label>
-          <input type="text" id="destino" list="cidade-lista" placeholder="Digite a cidade de destino" autocomplete="off">
+          <div class="od-fields">
+            <div class="od-field">
+              <label for="origem">Origem</label>
+              <div class="field-wrap">
+                <span class="field-dot origem"></span>
+                <input type="text" id="origem" value="Rio de Janeiro/RJ" disabled>
+              </div>
+            </div>
+            <div class="od-field">
+              <label for="destino">Destino</label>
+              <div class="field-wrap">
+                <span class="field-dot destino"></span>
+                <input type="text" id="destino" list="cidade-lista" placeholder="Digite a cidade de destino" autocomplete="off">
+              </div>
+            </div>
+          </div>
           <datalist id="cidade-lista"></datalist>
 
           <label for="km" id="km-label">Distância estimada só de ida (km)</label>
