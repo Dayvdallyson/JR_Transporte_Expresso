@@ -374,7 +374,7 @@
 
           <label class="toggle" for="retorno">
             <input type="checkbox" id="retorno">
-            Considerar retorno (ida e volta)
+            Considerar retorno (ida e volta +50%)
           </label>
           <label class="toggle" for="urgencia">
             <input type="checkbox" id="urgencia">
@@ -467,6 +467,7 @@ const PRECO = {
   precoMinimo:      250,   // piso por corrida
   pousadaACada:     900,   // soma 1 pousada a cada bloco de 900 km
   pousadaValor:     250,   // valor de cada pousada em BRL
+  adicionalRetorno: 0.50,  // +50% quando marcar ida e volta
   adicionalPax:     0.15,  // +15% se for viagem com passageiro
   adicionalUrg:     0.20   // +20% urgência (controlado pelo checkbox)
 };
@@ -6099,12 +6100,13 @@ function calcular(){
     ultimo={texto:"",oneway:0}; return montarLink();
   }
 
-  const kmTotal = retorno.checked ? oneway*2 : oneway;
+  const kmTotal = oneway; // distância de referência = ida (preço da volta vira +50%)
 
-  let preco = kmTotal * PRECO.precoPorKm;            // tarifa por km (já dobra no retorno)
+  let preco = kmTotal * PRECO.precoPorKm;            // tarifa por km (ida)
   if(servico.value==="passageiro") preco *= (1 + PRECO.adicionalPax);
   if(urgencia.checked)             preco *= (1 + PRECO.adicionalUrg);
   preco += Math.floor(kmTotal / PRECO.pousadaACada) * PRECO.pousadaValor; // pousada por bloco de 900km
+  if(retorno.checked)              preco *= (1 + PRECO.adicionalRetorno);  // ida e volta = +50%
   preco = Math.max(preco, PRECO.precoMinimo);
   preco = Math.ceil(preco/10)*10; // arredonda pra cima em dezenas
 
