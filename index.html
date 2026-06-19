@@ -134,6 +134,20 @@
   .rota .od .line{width:26px;height:2px;background:repeating-linear-gradient(90deg,var(--ambar) 0 5px,transparent 5px 9px)}
   .rota .km{font-family:'Spline Sans Mono';color:var(--muted);font-size:.9rem}
 
+  /* ===== Veículo ===== */
+  .veiculo{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}
+  @media(max-width:780px){.veiculo{grid-template-columns:1fr}}
+  .veiculo-foto{margin:0;border:1px solid var(--linha);border-radius:18px;overflow:hidden;
+    background:var(--asfalto)}
+  .veiculo-foto img{display:block;width:100%;height:auto}
+  .veiculo-info h3{margin:0 0 10px}
+  .specs{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:1px;
+    background:var(--linha);border:1px solid var(--linha);border-radius:12px;overflow:hidden}
+  .specs li{display:flex;justify-content:space-between;gap:16px;
+    background:var(--superficie);padding:12px 16px;font-size:.94rem}
+  .specs li span{color:var(--muted)}
+  .specs li b{text-align:right}
+
   /* ===== Estimador (assinatura: painel/odômetro) ===== */
   .estimador{
     background:linear-gradient(180deg,var(--superficie-2),var(--superficie));
@@ -292,6 +306,33 @@
   </div>
 </section>
 
+<!-- ===================== VEÍCULO ===================== -->
+<section id="veiculo">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">O carro</div>
+      <h2>Toyota Corolla 2023</h2>
+      <p>Sedã próprio, revisado e segurado. Conforto para o passageiro e espaço protegido para a sua encomenda.</p>
+    </div>
+    <div class="veiculo">
+      <figure class="veiculo-foto">
+        <img src="assets/corolla-2023.jpg" alt="Toyota Corolla 2023" loading="lazy" width="1024" height="576">
+      </figure>
+      <div class="veiculo-info">
+        <h3>Por que o Corolla?</h3>
+        <p>Carro confiável para rodar longas distâncias com tranquilidade — baixo consumo, manutenção em dia e ar-condicionado para qualquer trajeto.</p>
+        <ul class="specs">
+          <li><span>Modelo</span><b>Corolla (Toyota) 2023</b></li>
+          <li><span>Tipo</span><b>Sedã · 5 lugares</b></li>
+          <li><span>Conforto</span><b>Ar-condicionado digital</b></li>
+          <li><span>Porta-malas</span><b>~470 L para encomendas</b></li>
+          <li><span>Documentação</span><b>Revisado e segurado</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== ESTIMADOR ===================== -->
 <section id="estimador">
   <div class="wrap">
@@ -333,7 +374,7 @@
 
           <label class="toggle" for="retorno">
             <input type="checkbox" id="retorno">
-            Considerar retorno (ida e volta +30%)
+            Considerar retorno (ida e volta)
           </label>
           <label class="toggle" for="urgencia">
             <input type="checkbox" id="urgencia">
@@ -422,15 +463,10 @@ const WHATSAPP = "5521964645492";
    2) REGRA DE PREÇO — ajuste à vontade depois de testar no mundo real
    ================================================================ */
 const PRECO = {
-  precoCombustivel: 6.30,  // R$/litro (gasolina RJ, ref. ANP jun/2026)
-  kmPorLitro:       13,    // Corolla 2.0 em estrada, uso real c/ ar-cond.
-  desgastePorKm:    0.30,  // depreciação + manutenção + pneus por km
-  diaria:           350,   // sua mão de obra / tempo num trajeto longo
-  margemPct:        0.20,  // margem de lucro sobre o custo
+  precoPorKm:       3.60,  // R$/km — tarifa cheia (faixa real: 3.40 a 3.80)
   precoMinimo:      250,   // piso por corrida
-  pousadaAcimaKm:   900,   // acima disso soma pousada
-  pousadaValor:     250,   // pousada média em BRL
-  adicionalRetorno: 0.30,  // +30% quando marcar ida e volta
+  pousadaACada:     900,   // soma 1 pousada a cada bloco de 900 km
+  pousadaValor:     250,   // valor de cada pousada em BRL
   adicionalPax:     0.15,  // +15% se for viagem com passageiro
   adicionalUrg:     0.20   // +20% urgência (controlado pelo checkbox)
 };
@@ -6064,16 +6100,11 @@ function calcular(){
   }
 
   const kmTotal = retorno.checked ? oneway*2 : oneway;
-  const diarias = PRECO.diaria * (retorno.checked ? 2 : 1);
-  const fuel    = (kmTotal / PRECO.kmPorLitro) * PRECO.precoCombustivel;
-  const desgaste= kmTotal * PRECO.desgastePorKm;
-  const custoOp = fuel + desgaste;
 
-  let preco = (custoOp + diarias) * (1 + PRECO.margemPct);
-  if(retorno.checked)             preco *= (1 + PRECO.adicionalRetorno);
+  let preco = kmTotal * PRECO.precoPorKm;            // tarifa por km (já dobra no retorno)
   if(servico.value==="passageiro") preco *= (1 + PRECO.adicionalPax);
   if(urgencia.checked)             preco *= (1 + PRECO.adicionalUrg);
-  if(kmTotal > PRECO.pousadaAcimaKm) preco += PRECO.pousadaValor;
+  preco += Math.floor(kmTotal / PRECO.pousadaACada) * PRECO.pousadaValor; // pousada por bloco de 900km
   preco = Math.max(preco, PRECO.precoMinimo);
   preco = Math.ceil(preco/10)*10; // arredonda pra cima em dezenas
 
